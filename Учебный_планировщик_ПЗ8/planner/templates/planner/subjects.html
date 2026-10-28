@@ -1,0 +1,30 @@
+{% extends 'planner/base.html' %}
+{% block title %}Дисциплины | Учебный планировщик{% endblock %}
+{% block content %}
+<div class="page-header mb-4"><div class="row align-items-center"><div class="col">
+    <h2 class="page-title">Учебные дисциплины</h2><div class="text-secondary mt-1">Список дисциплин и связанных с ними заданий</div>
+</div></div></div>
+<div class="row row-cards">
+    <div class="col-12 col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">Новая дисциплина</h3></div>
+        <form method="post">{% csrf_token %}<div class="card-body">
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+            {% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+                {% for error in field.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>{% endfor %}
+        </div><div class="card-footer"><button type="submit" class="btn btn-primary w-100"><i class="ti ti-plus me-1"></i>Добавить дисциплину</button></div></form>
+    </div></div>
+    <div class="col-12 col-lg-8"><div class="card"><div class="card-header"><h3 class="card-title">Список дисциплин</h3>
+        <div class="card-actions"><span class="badge bg-primary-lt">{{ subjects|length }}</span></div></div>
+        <div class="list-group list-group-flush">
+            {% for subject in subjects %}<div class="list-group-item"><div class="row align-items-center">
+                <div class="col-auto"><span class="avatar bg-primary-lt"><i class="ti ti-book"></i></span></div>
+                <div class="col min-width-0"><div class="fw-medium text-truncate">{{ subject.name }}</div>
+                    <div class="text-secondary small">{% if subject.description %}{{ subject.description }}{% else %}Описание не добавлено{% endif %}</div></div>
+                <div class="col-auto text-end"><div class="h3 mb-0">{{ subject.task_count }}</div><div class="text-secondary small">заданий</div></div>
+            </div></div>
+            {% empty %}<div class="card-body"><div class="empty"><div class="empty-icon"><i class="ti ti-books"></i></div>
+                <p class="empty-title">Дисциплин пока нет</p><p class="empty-subtitle text-secondary">Добавь первую дисциплину с помощью формы.</p></div></div>
+            {% endfor %}
+        </div>
+    </div></div>
+</div>
+{% endblock %}

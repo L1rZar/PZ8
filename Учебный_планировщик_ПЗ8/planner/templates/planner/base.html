@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Учебный планировщик{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="{% static 'planner/css/custom.css' %}">
+</head>
+<body>
+<div class="page">
+    {% include 'planner/includes/navbar.html' %}
+    <div class="page-wrapper">
+        <div class="page-body">
+            <div class="container-xl">
+                {% include 'planner/includes/messages.html' %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+<form id="csrf-token-form" class="d-none">{% csrf_token %}</form>
+<div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/js/tabler.min.js"></script>
+<script src="{% static 'planner/js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

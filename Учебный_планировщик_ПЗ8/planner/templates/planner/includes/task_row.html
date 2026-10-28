@@ -1,0 +1,33 @@
+<tr data-task-row data-title="{{ task.title|lower }}" data-status="{{ task.status }}"
+    data-subject="{{ task.subject_id }}" data-due-date="{{ task.due_date|date:'Y-m-d' }}">
+    <td>
+        <div class="fw-medium">{{ task.title }}</div>
+        <div class="text-secondary small">{{ task.get_status_display }}</div>
+    </td>
+    <td>{{ task.subject.name }}</td>
+    <td>{{ task.due_date|date:'d.m.Y' }}</td>
+    <td>
+        <select class="form-select form-select-sm" data-status-select
+                data-url="{% url 'planner:task_change_status' task.id %}" aria-label="Статус задания">
+            {% if task.status == 'new' %}
+            <option value="new" selected>Новое</option><option value="in_progress">В работе</option>
+            {% elif task.status == 'in_progress' %}
+            <option value="new">Новое</option><option value="in_progress" selected>В работе</option><option value="completed">Выполнено</option>
+            {% else %}
+            <option value="in_progress">В работе</option><option value="completed" selected>Выполнено</option>
+            {% endif %}
+        </select>
+    </td>
+    <td class="text-end">
+        <div class="btn-list justify-content-end flex-nowrap">
+            <a href="{% url 'planner:task_edit' task.id %}" class="btn btn-sm btn-outline-primary" aria-label="Редактировать задание">
+                <i class="ti ti-edit"></i>
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+                    data-delete-task data-url="{% url 'planner:task_delete' task.id %}"
+                    data-title="{{ task.title }}" aria-label="Удалить задание">
+                <i class="ti ti-trash"></i>
+            </button>
+        </div>
+    </td>
+</tr>

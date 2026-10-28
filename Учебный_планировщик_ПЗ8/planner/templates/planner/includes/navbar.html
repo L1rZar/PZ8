@@ -1,0 +1,25 @@
+<header class="navbar navbar-expand-md d-print-none">
+    <div class="container-xl">
+        <a class="navbar-brand" href="{% if request.user.is_authenticated %}{% url 'planner:dashboard' %}{% else %}{% url 'planner:login' %}{% endif %}">
+            <span class="avatar avatar-sm bg-primary text-white me-2"><i class="ti ti-school"></i></span>
+            Учебный планировщик
+        </a>
+        {% if request.user.is_authenticated %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Открыть меню"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbar-menu">
+            <div class="navbar-nav me-auto">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'planner:dashboard' %}"><i class="ti ti-layout-dashboard me-1"></i>Главная</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'tasks' %}active{% endif %}" href="{% url 'planner:tasks' %}"><i class="ti ti-list-check me-1"></i>Задания</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'subjects' %}active{% endif %}" href="{% url 'planner:subjects' %}"><i class="ti ti-books me-1"></i>Дисциплины</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'api_console' %}active{% endif %}" href="{% url 'planner:api_console' %}"><i class="ti ti-code me-1"></i>REST API</a>
+            </div>
+            <div class="navbar-nav align-items-md-center gap-md-2">
+                <span class="navbar-text small text-secondary"><i class="ti ti-user-circle me-1"></i>{{ request.user.username }}</span>
+                <form method="post" action="{% url 'planner:logout' %}">{% csrf_token %}<button type="submit" class="btn btn-outline-secondary btn-sm"><i class="ti ti-logout me-1"></i>Выйти</button></form>
+            </div>
+        </div>
+        {% else %}
+        <div class="navbar-nav ms-auto flex-row gap-2"><a class="btn btn-outline-primary btn-sm" href="{% url 'planner:login' %}">Войти</a><a class="btn btn-primary btn-sm" href="{% url 'planner:register' %}">Регистрация</a></div>
+        {% endif %}
+    </div>
+</header>

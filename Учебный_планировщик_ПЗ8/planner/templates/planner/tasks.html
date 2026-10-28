@@ -1,0 +1,68 @@
+{% extends 'planner/base.html' %}
+{% block title %}Задания | Учебный планировщик{% endblock %}
+{% block content %}
+<div class="page-header mb-4"><div class="row align-items-center"><div class="col">
+    <h2 class="page-title">Учебные задания</h2><div class="text-secondary mt-1">Создавай задания и следи за сроками выполнения</div>
+</div></div></div>
+<div class="row row-cards">
+    <div class="col-12 col-xl-4">
+        <div class="card"><div class="card-header"><h3 class="card-title">Новое задание</h3></div>
+        <div class="card-body">
+            {% if subjects %}
+            <form id="task-create-form" action="{% url 'planner:task_create' %}" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<div class="form-hint">{{ field.help_text }}</div>{% endif %}
+                    <div class="invalid-feedback" data-error-for="{{ field.name }}"></div>
+                </div>
+                {% endfor %}
+                <div id="task-form-error" class="text-danger small mb-3"></div>
+                <button type="submit" class="btn btn-primary w-100"><i class="ti ti-plus me-1"></i>Добавить задание</button>
+            </form>
+            {% else %}
+            <div class="empty py-3"><div class="empty-icon"><i class="ti ti-books"></i></div>
+                <p class="empty-title">Сначала добавь дисциплину</p><p class="empty-subtitle text-secondary">Задание должно быть связано с дисциплиной из базы данных.</p>
+                <a href="{% url 'planner:subjects' %}" class="btn btn-primary">Добавить дисциплину</a>
+            </div>
+            {% endif %}
+        </div></div>
+    </div>
+    <div class="col-12 col-xl-8">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Список заданий</h3><div class="card-actions"><span class="badge bg-primary-lt" id="visible-task-count">{{ tasks|length }} заданий</span></div></div>
+            <div class="card-body border-bottom">
+                <div class="row g-2">
+                    <div class="col-12 col-md-6"><label class="form-label" for="task-search">Поиск</label>
+                        <div class="input-icon"><span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                            <input type="search" class="form-control" id="task-search" placeholder="Название задания..."></div>
+                    </div>
+                    <div class="col-6 col-md-3"><label class="form-label" for="task-status-filter">Статус</label>
+                        <select class="form-select" id="task-status-filter"><option value="">Все статусы</option>
+                            <option value="new">Новое</option><option value="in_progress">В работе</option><option value="completed">Выполнено</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3"><label class="form-label" for="task-subject-filter">Дисциплина</label>
+                        <select class="form-select" id="task-subject-filter"><option value="">Все дисциплины</option>
+                            {% for subject in subjects %}<option value="{{ subject.id }}">{{ subject.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6"><label class="form-label" for="task-sort">Сортировка</label>
+                        <select class="form-select" id="task-sort"><option value="date">По сроку выполнения</option><option value="title">По названию</option><option value="status">По статусу</option></select>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-end"><button type="button" id="reset-task-filters" class="btn btn-outline-secondary w-100"><i class="ti ti-filter-off me-1"></i>Сбросить фильтры</button></div>
+                </div>
+            </div>
+            <div class="table-responsive"><table class="table table-vcenter card-table">
+                <thead><tr><th>Задание</th><th>Дисциплина</th><th>Срок</th><th>Статус</th><th></th></tr></thead>
+                <tbody id="task-table-body">
+                    {% for task in tasks %}{% include 'planner/includes/task_row.html' with task=task %}
+                    {% empty %}<tr id="empty-task-row"><td colspan="5"><div class="empty py-4"><p class="empty-title">Заданий пока нет</p><p class="empty-subtitle text-secondary">Добавь первое задание с помощью формы.</p></div></td></tr>{% endfor %}
+                </tbody>
+            </table></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

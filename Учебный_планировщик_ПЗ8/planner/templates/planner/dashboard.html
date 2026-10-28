@@ -1,0 +1,62 @@
+{% extends 'planner/base.html' %}
+{% block title %}Главная | Учебный планировщик{% endblock %}
+{% block content %}
+<div class="page-header d-print-none mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="page-title">Главная панель</h2>
+            <div class="text-secondary mt-1">Обзор учебных заданий и сроков выполнения</div>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'planner:tasks' %}" class="btn btn-primary"><i class="ti ti-plus me-1"></i>Добавить задание</a>
+        </div>
+    </div>
+</div>
+<div class="row row-cards mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">{% include 'planner/includes/stats_card.html' with label='Всего заданий' value=total_tasks color='primary' icon='ti-list-check' %}</div>
+    <div class="col-12 col-sm-6 col-xl-3">{% include 'planner/includes/stats_card.html' with label='Новые' value=new_tasks color='secondary' icon='ti-inbox' %}</div>
+    <div class="col-12 col-sm-6 col-xl-3">{% include 'planner/includes/stats_card.html' with label='В работе' value=in_progress_tasks color='azure' icon='ti-clock' %}</div>
+    <div class="col-12 col-sm-6 col-xl-3">{% include 'planner/includes/stats_card.html' with label='Выполнено' value=completed_tasks color='green' icon='ti-check' %}</div>
+    <div class="col-12 col-sm-6 col-xl-3">{% include 'planner/includes/stats_card.html' with label='Просрочено' value=overdue_tasks color='red' icon='ti-alert-triangle' %}</div>
+    <div class="col-12 col-sm-6 col-xl-3"><div class="card card-sm"><div class="card-body"><div class="row align-items-center"><div class="col-auto"><span class="avatar bg-purple-lt"><i class="ti ti-books"></i></span></div><div class="col"><div class="font-weight-medium">{{ subject_count }}</div><div class="text-secondary">Дисциплин</div></div></div></div></div></div>
+</div>
+<div class="row row-cards">
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Ближайшие задания</h3><div class="card-actions"><a href="{% url 'planner:tasks' %}">Все задания</a></div></div>
+            <div class="card-body border-bottom"><div class="d-flex justify-content-between mb-2"><span class="text-secondary">Выполнение заданий</span><span class="fw-semibold">{{ completion_percent }}%</span></div><div class="progress progress-sm"><div class="progress-bar bg-success" style="width: {{ completion_percent }}%" role="progressbar" aria-valuenow="{{ completion_percent }}" aria-valuemin="0" aria-valuemax="100"></div></div></div>
+            {% if upcoming_tasks %}
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead><tr><th>Задание</th><th>Дисциплина</th><th>Срок</th></tr></thead>
+                    <tbody>{% for task in upcoming_tasks %}
+                    <tr><td>{{ task.title }}</td><td>{{ task.subject.name }}</td><td>{{ task.due_date|date:'d.m.Y' }}</td></tr>
+                    {% endfor %}</tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="card-body"><div class="empty">
+                <div class="empty-icon"><i class="ti ti-calendar-check"></i></div>
+                <p class="empty-title">Нет ближайших заданий</p>
+                <p class="empty-subtitle text-secondary">Добавь новое задание, чтобы оно появилось здесь.</p>
+            </div></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="card h-100">
+            <div class="card-header"><h3 class="card-title">Быстрый переход</h3></div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'planner:tasks' %}" class="list-group-item list-group-item-action">
+                    <div class="row align-items-center"><div class="col-auto"><span class="avatar bg-primary-lt"><i class="ti ti-list-check"></i></span></div>
+                    <div class="col"><div class="fw-medium">Мои задания</div><div class="text-secondary small">Просмотр и управление заданиями</div></div><div class="col-auto"><i class="ti ti-chevron-right"></i></div></div>
+                </a>
+                <a href="{% url 'planner:subjects' %}" class="list-group-item list-group-item-action">
+                    <div class="row align-items-center"><div class="col-auto"><span class="avatar bg-azure-lt"><i class="ti ti-books"></i></span></div>
+                    <div class="col"><div class="fw-medium">Дисциплины</div><div class="text-secondary small">Управление учебными предметами</div></div><div class="col-auto"><i class="ti ti-chevron-right"></i></div></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

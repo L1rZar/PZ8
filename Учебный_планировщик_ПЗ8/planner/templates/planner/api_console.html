@@ -1,0 +1,62 @@
+{% extends 'planner/base.html' %}
+{% load static %}
+{% block title %}REST API | Учебный планировщик{% endblock %}
+{% block content %}
+<div class="page-header mb-4">
+    <div class="row align-items-center"><div class="col">
+        <h2 class="page-title">Центр управления REST API</h2>
+        <div class="text-secondary mt-1">Управление дисциплинами и заданиями через Django REST Framework</div>
+    </div></div>
+</div>
+<div class="alert alert-info" role="note">
+    <div class="d-flex"><div><i class="ti ti-info-circle me-2"></i></div><div>
+        Все операции на этой странице выполняются запросами к API. Список заданий можно фильтровать на сервере по названию, статусу, дисциплине и срокам.
+        <div class="mt-1"><a href="/api/" target="_blank" rel="noopener">Открыть корень API</a> · <a href="/api/tasks/" target="_blank" rel="noopener">API заданий</a> · <a href="/api/subjects/" target="_blank" rel="noopener">API дисциплин</a></div>
+    </div></div>
+</div>
+<div id="api-message" class="alert d-none" role="alert"></div>
+<div class="row row-cards">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Дисциплины</h3><div class="card-actions"><span id="subject-count" class="badge bg-primary-lt">0</span></div></div>
+            <div class="card-body">
+                <form id="subject-form" class="row g-3">
+                    <input type="hidden" id="subject-id">
+                    <div class="col-12 col-md-3"><label class="form-label" for="subject-name">Название</label><input id="subject-name" class="form-control" maxlength="150" required placeholder="Например, Базы данных"></div>
+                    <div class="col-12 col-md-6"><label class="form-label" for="subject-description">Описание</label><input id="subject-description" class="form-control" placeholder="Краткое описание дисциплины"></div>
+                    <div class="col-12 col-md-3 d-flex align-items-end gap-2"><button class="btn btn-primary flex-fill" type="submit" id="subject-submit">Добавить</button><button class="btn btn-outline-secondary" type="button" id="subject-cancel">Сбросить</button></div>
+                </form>
+            </div>
+            <div class="table-responsive"><table class="table table-vcenter card-table"><thead><tr><th>ID</th><th>Название</th><th>Описание</th><th>Заданий</th><th>Действия</th></tr></thead><tbody id="subjects-body"><tr><td colspan="5" class="text-secondary">Загрузка...</td></tr></tbody></table></div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">Задания</h3><div class="card-actions"><span id="task-count" class="badge bg-primary-lt">0</span></div></div>
+            <div class="card-body border-bottom">
+                <form id="task-form" class="row g-3">
+                    <input type="hidden" id="task-id">
+                    <div class="col-12 col-md-4"><label class="form-label" for="task-title">Название задания</label><input id="task-title" class="form-control" maxlength="200" required placeholder="Например, Лабораторная работа № 6"></div>
+                    <div class="col-12 col-md-3"><label class="form-label" for="task-subject">Дисциплина</label><select id="task-subject" class="form-select" required><option value="">Сначала добавьте дисциплину</option></select></div>
+                    <div class="col-6 col-md-2"><label class="form-label" for="task-due-date">Срок</label><input id="task-due-date" class="form-control" type="date" required></div>
+                    <div class="col-6 col-md-3"><label class="form-label" for="task-status">Статус</label><select id="task-status" class="form-select" disabled><option value="new">Новое</option><option value="in_progress">В работе</option><option value="completed">Выполнено</option></select><div class="form-hint" id="task-status-hint">Новое задание начинается со статуса «Новое».</div></div>
+                    <div class="col-12 d-flex gap-2"><button class="btn btn-primary" type="submit" id="task-submit">Добавить задание</button><button class="btn btn-outline-secondary" type="button" id="task-cancel">Сбросить</button></div>
+                </form>
+            </div>
+            <div class="card-body border-bottom">
+                <form id="task-filters" class="row g-2">
+                    <div class="col-12 col-md-3"><label class="form-label" for="filter-search">Название содержит</label><input id="filter-search" class="form-control" placeholder="Поиск по названию"></div>
+                    <div class="col-6 col-md-2"><label class="form-label" for="filter-status">Статус</label><select id="filter-status" class="form-select"><option value="">Все статусы</option><option value="new">Новое</option><option value="in_progress">В работе</option><option value="completed">Выполнено</option></select></div>
+                    <div class="col-6 col-md-3"><label class="form-label" for="filter-subject">Дисциплина</label><select id="filter-subject" class="form-select"><option value="">Все дисциплины</option></select></div>
+                    <div class="col-6 col-md-2"><label class="form-label" for="filter-after">Срок от</label><input id="filter-after" class="form-control" type="date"></div>
+                    <div class="col-6 col-md-2"><label class="form-label" for="filter-before">Срок до</label><input id="filter-before" class="form-control" type="date"></div>
+                    <div class="col-12 col-md-4"><label class="form-label" for="filter-ordering">Сортировка</label><select id="filter-ordering" class="form-select"><option value="due_date">Сначала ближайшие сроки</option><option value="-due_date">Сначала поздние сроки</option><option value="title">По названию А-Я</option><option value="-title">По названию Я-А</option><option value="status">По статусу</option></select></div>
+                    <div class="col-12 col-md-8 d-flex align-items-end gap-2"><button class="btn btn-primary" type="submit"><i class="ti ti-filter me-1"></i>Применить фильтры</button><button class="btn btn-outline-secondary" type="button" id="filters-reset">Сбросить</button><span class="text-secondary small align-self-center" id="filter-summary"></span></div>
+                </form>
+            </div>
+            <div class="table-responsive"><table class="table table-vcenter card-table"><thead><tr><th>ID</th><th>Задание</th><th>Дисциплина</th><th>Срок</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="tasks-body"><tr><td colspan="6" class="text-secondary">Загрузка...</td></tr></tbody></table></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'planner/js/api_console.js' %}"></script>{% endblock %}
